@@ -3,17 +3,18 @@ import java.util.List;
 
 public class Board {
 
-	public static final int  boardSize = 10;
+	private int  boardSize;
 	
 	private Ship[][] shipLocations;
 	private boolean[][] shotsFired;
 	boolean isHorizontal = true;
 	private List<Ship> shipsOnBoard;
 	
-	public Board() {
+	public Board(int boardSize) {
 		this.shipLocations = new Ship[this.boardSize][this.boardSize];
 		this.shotsFired = new boolean[this.boardSize][this.boardSize]; 
         this.shipsOnBoard = new ArrayList<>();
+        this.boardSize =boardSize;
 	}
 	
 	  public boolean isValidCoordinate(int row, int col) {
