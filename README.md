@@ -1,5 +1,4 @@
-# Battleships
-# Battleship Game
+# Battleship 
 
 A classic implementation of the popular Battleship game, written in Java with a Swing GUI. It supports single-player (against AI) and two-player modes.
 
@@ -63,13 +62,11 @@ A classic implementation of the popular Battleship game, written in Java with a 
 
 ## Contributors
 
-*   
-HawkAfk5 Til_top
-mariagete
-nikostsormpa
-K6619
-DimiStell
-Nikos-Palios
----
+*  HawkAfk5 Til_top
+*  mariagete
+*  nikostsormpa
+*  K6619
+*  DimiStell
+*  Nikos-Palios
 
-Feel free to add or remove sections based on your needs! For example, if you've used specific libraries or have more complex setup instructions, you can add them.
+*This project was completed for the Software Engineering course (ΠΛ0613) at [University of Macedonia].*
