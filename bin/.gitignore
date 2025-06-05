@@ -1,5 +1,4 @@
 /Board.class
-<<<<<<< HEAD
 /GameGUI.class 
 /Main.class 
 /Player.class 
@@ -7,7 +6,6 @@
 /SettingsGUI.class
 /Ship.class
 /StartingScreenGUI.class
-=======
 /GameGUI.class
 /Main.class
 /Player.class
@@ -21,4 +19,4 @@
 /SettingsGUI$ButtonListener1.class
 /SettingsGUI$ButtonListener2.class
 /SettingsGUI$ButtonListener3.class
->>>>>>> main
+
