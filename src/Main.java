@@ -1,9 +1,15 @@
+import javax.swing.SwingUtilities;
 
 public class Main {
 
 	public static void main(String[] args) {
 		
-		//Creation of GUI
-		new StartingScreenGUI();
+		SwingUtilities.invokeLater(new Runnable() {
+	        public void run() {
+	        	//Creation of GUI
+	            StartingScreenGUI startingScreen = new StartingScreenGUI();
+	            startingScreen.setVisible(true);
+	        }
+		 });
 	}
 }
