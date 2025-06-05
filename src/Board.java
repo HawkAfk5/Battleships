@@ -11,10 +11,10 @@ public class Board {
 	private List<Ship> shipsOnBoard;
 	
 	public Board(int boardSize) {
+		this.boardSize =boardSize; 
 		this.shipLocations = new Ship[this.boardSize][this.boardSize];
 		this.shotsFired = new boolean[this.boardSize][this.boardSize]; 
         this.shipsOnBoard = new ArrayList<>();
-        this.boardSize =boardSize;
 	}
 	
 	  public boolean isValidCoordinate(int row, int col) {
