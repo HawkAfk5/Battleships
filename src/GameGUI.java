@@ -11,6 +11,7 @@ public class GameGUI extends JFrame {
     private JPanel boardPanel;
     private int[] shipSizes = {5, 4, 3, 3, 2};
     private int numOfPlayers = 2;  // default 2
+    private Random random = new Random();
 
     public GameGUI() {
         setTitle("Ναυμαχίες");
@@ -33,7 +34,7 @@ public class GameGUI extends JFrame {
         if (numOfPlayers == 2) {
             setupBoards();
         } else {
-            JOptionPane.showMessageDialog(this, "Η λειτουργία για 1 παίκτη θα προστεθεί σύντομα!");
+            setupSinglePlayer();
         }
     }
 
@@ -47,6 +48,30 @@ public class GameGUI extends JFrame {
                 setupGameBoard();
             });
         });
+    }
+
+    private void setupSinglePlayer() {
+        player1Board = new Board(boardSize);
+        player2Board = new Board(boardSize);
+
+        placeShipsForPlayer(player1Board, "Παίκτης", () -> {
+            autoPlaceShips(player2Board);
+            JOptionPane.showMessageDialog(this, "Ξεκινά το παιχνίδι ενάντια στον υπολογιστή!");
+            setupGameBoard();
+        });
+    }
+
+    private void autoPlaceShips(Board board) {
+        for (int size : shipSizes) {
+            boolean placed = false;
+            while (!placed) {
+                int row = random.nextInt(boardSize);
+                int col = random.nextInt(boardSize);
+                boolean horizontal = random.nextBoolean();
+                Ship ship = new Ship("Bot", size);
+                placed = board.placeShip(ship, row, col, horizontal);
+            }
+        }
     }
 
     private void placeShipsForPlayer(Board board, String playerName, Runnable onComplete) {
@@ -126,10 +151,14 @@ public class GameGUI extends JFrame {
             for (int col = 0; col < boardSize; col++) {
                 JButton btn = attackButtons[row][col];
                 boolean shot = defenderBoard.isShotAt(row, col);
-                btn.setEnabled(!shot);
+                btn.setEnabled(isPlayerOneTurn || numOfPlayers == 2);
                 if (shot) {
                     Ship ship = defenderBoard.getShipAt(row, col);
-                    btn.setBackground(ship != null ? Color.ORANGE : Color.CYAN);
+                    if (ship != null) {
+                        btn.setBackground(ship.isSunk() ? Color.RED : Color.ORANGE);
+                    } else {
+                        btn.setBackground(Color.CYAN);
+                    }
                 } else {
                     btn.setBackground(null);
                 }
@@ -148,26 +177,81 @@ public class GameGUI extends JFrame {
         btn.setEnabled(false);
 
         switch (result) {
-            case "HIT":
-                btn.setBackground(Color.ORANGE);
-                break;
-            case "MISS":
-                btn.setBackground(Color.CYAN);
-                break;
-            case "SUNK":
-                btn.setBackground(Color.RED);
-                break;
+            case "HIT" -> btn.setBackground(Color.ORANGE);
+            case "MISS" -> btn.setBackground(Color.CYAN);
+            case "SUNK" -> btn.setBackground(Color.RED);
         }
 
         if (defenderBoard.areAllShipsSunk()) {
-            String winner = isPlayerOneTurn ? "Παίκτης 1" : "Παίκτης 2";
-            JOptionPane.showMessageDialog(this, winner + " ΚΕΡΔΙΣΕ!");
-            System.exit(0);
+            String winner = isPlayerOneTurn ? "Παίκτης 1" : (numOfPlayers == 1 ? "Ο υπολογιστής" : "Παίκτης 2");
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(this, winner + " ΚΕΡΔΙΣΕ!");
+                askForRestart();
+            });
+            return;
         }
 
-        isPlayerOneTurn = !isPlayerOneTurn;
-        JOptionPane.showMessageDialog(this, "Σειρά του " + (isPlayerOneTurn ? "Παίκτη 1" : "Παίκτη 2"));
-        updateBoardView();
+        if (numOfPlayers == 2) {
+            if (result.equals("MISS")) {
+                isPlayerOneTurn = !isPlayerOneTurn;
+                JOptionPane.showMessageDialog(this, "Άστοχο! Σειρά του " + (isPlayerOneTurn ? "Παίκτη 1" : "Παίκτη 2"));
+            } else {
+                JOptionPane.showMessageDialog(this, "Εύστοχο! Ξαναρίξε " + (isPlayerOneTurn ? "Παίκτη 1" : "Παίκτη 2"));
+            }
+            updateBoardView();
+        } else {
+            // Single player mode stays as is
+            isPlayerOneTurn = !isPlayerOneTurn;
+            updateBoardView();
+            botTurn();
+        }
+    }
+    
+    private void botTurn() {
+        Timer timer = new Timer(1000, e -> {
+            int row, col;
+            do {
+                row = random.nextInt(boardSize);
+                col = random.nextInt(boardSize);
+            } while (player1Board.isShotAt(row, col));
+
+            String result = player1Board.receiveAttack(row, col);
+            JButton btn = attackButtons[row][col];
+
+            switch (result) {
+                case "HIT" -> btn.setBackground(Color.ORANGE);
+                case "MISS" -> btn.setBackground(Color.CYAN);
+                case "SUNK" -> btn.setBackground(Color.RED);
+            }
+
+            if (player1Board.areAllShipsSunk()) {
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(this, "Ο υπολογιστής ΚΕΡΔΙΣΕ!");
+                    askForRestart();
+                });
+                return;
+            }
+
+            isPlayerOneTurn = true;
+            updateBoardView();
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    private void askForRestart() {
+        int choice = JOptionPane.showConfirmDialog(this, "Θέλεις να ξαναπαίξεις;", "Νέα Παρτίδα;",
+                JOptionPane.YES_NO_OPTION);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            isPlayerOneTurn = true;
+            getContentPane().removeAll();
+            revalidate();
+            repaint();
+            askPlayerCount();
+        } else {
+            System.exit(0);
+        }
     }
 
     public static void main(String[] args) {
