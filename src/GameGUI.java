@@ -10,32 +10,24 @@ public class GameGUI extends JFrame {
     private JButton[][] attackButtons;
     private JPanel boardPanel;
     private int[] shipSizes = {5, 4, 3, 3, 2};
-    private int numOfPlayers = 2;  // default 2
+    private int numOfPlayers;
     private Random random = new Random();
 
-    public GameGUI() {
-        setTitle("Ναυμαχίες");
+    public GameGUI(int mode) {
+        this.numOfPlayers = mode;
+    	setTitle("Ναυμαχίες");
         setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        askPlayerCount();
+        startGame();
     }
 
-    private void askPlayerCount() {
-        String[] options = {"1 Παίκτης", "2 Παίκτες"};
-        int choice = JOptionPane.showOptionDialog(this,
-                "Επέλεξε αριθμό παικτών",
-                "Ναυμαχίες",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, options, options[0]);
-
-        numOfPlayers = (choice == 0) ? 1 : 2;
-
-        if (numOfPlayers == 2) {
+    private void startGame() {
+        
+    	if (numOfPlayers == 2) 
             setupBoards();
-        } else {
+         else 
             setupSinglePlayer();
-        }
+        
     }
 
     private void setupBoards() {
@@ -137,7 +129,7 @@ public class GameGUI extends JFrame {
                 boardPanel.add(btn);
             }
         }
-
+        this.setVisible(true);
         add(boardPanel, BorderLayout.CENTER);
         revalidate();
         repaint();
@@ -248,16 +240,12 @@ public class GameGUI extends JFrame {
             getContentPane().removeAll();
             revalidate();
             repaint();
-            askPlayerCount();
+            startGame();
+            this.setVisible(false);
         } else {
             System.exit(0);
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            GameGUI gui = new GameGUI();
-            gui.setVisible(true);
-        });
-    }
+    
 }

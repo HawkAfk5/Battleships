@@ -94,7 +94,7 @@ public class StartingScreenGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
         	int mode = onePlayerRadio.isSelected() ? 1 : 2;
-            //new GameGUI(mode); // Άνοιγμα παιχνιδιού
+            new GameGUI(mode); // Άνοιγμα παιχνιδιού
             dispose();
         }
     }
