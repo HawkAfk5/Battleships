@@ -8,7 +8,6 @@ public class Main {
 	        public void run() {
 	        	//Creation of GUI
 	            StartingScreenGUI startingScreen = new StartingScreenGUI();
-	            startingScreen.setVisible(true);
 	        }
 		 });
 	}

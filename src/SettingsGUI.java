@@ -5,6 +5,8 @@ import javax.swing.*;
 
 public class SettingsGUI extends JFrame {
 
+	private StartingScreenGUI startingScreen;
+	
     //GUI components
     private JButton startingScreenButton;
     private JLabel grid;
@@ -19,7 +21,9 @@ public class SettingsGUI extends JFrame {
     private JRadioButton onMusicRadio;
     private JRadioButton offMusicRadio;
 
-    public SettingsGUI() {
+    public SettingsGUI(StartingScreenGUI startingScreen) {
+    	this.startingScreen = startingScreen;
+    	
         //Φόρτωση background
         ImageIcon backgroundIcon = new ImageIcon("1st.png"); 
         JLabel backgroundLabel = new JLabel(backgroundIcon);
@@ -35,6 +39,9 @@ public class SettingsGUI extends JFrame {
 
         JButton[] buttons = { startingScreenButton, creditsButton };
         for (JButton btn : buttons) {
+            btn.setBackground(new Color(70, 70, 70));
+            btn.setForeground(Color.WHITE);
+            btn.setFocusPainted(false);
             btn.setFont(bigFont);
             btn.setPreferredSize(buttonSize);
             btn.setMaximumSize(buttonSize);
@@ -121,6 +128,12 @@ public class SettingsGUI extends JFrame {
         radioPanel3.add(onMusicRadio);
         radioPanel3.add(offMusicRadio);
         
+        JLabel title = new JLabel("SETTINGS", SwingConstants.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 100));
+        title.setForeground(Color.WHITE);
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        
         //Κεντρικό πάνελ
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.Y_AXIS));
@@ -128,6 +141,8 @@ public class SettingsGUI extends JFrame {
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(20, 100, 50, 100));
 
         bottomPanel.add(Box.createVerticalGlue());
+        bottomPanel.add(title);
+        bottomPanel.add(Box.createRigidArea(new Dimension(0, 30)));
         bottomPanel.add(grid);
         bottomPanel.add(Box.createRigidArea(new Dimension(0, 30)));
         bottomPanel.add(radioPanel1);
@@ -175,8 +190,8 @@ public class SettingsGUI extends JFrame {
     class ButtonListener2 implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            new StartingScreenGUI(); // Άνοιγμα ρυθμίσεων
-            dispose();
+        	startingScreen.setVisible(true); 
+            (SettingsGUI.this).setVisible(false);
         }
     }
 }

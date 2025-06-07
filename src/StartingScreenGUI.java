@@ -5,6 +5,10 @@ import javax.swing.*;
 
 public class StartingScreenGUI extends JFrame {
 
+	private RulesGUI rulesGUI;
+    private SettingsGUI settingsGUI;
+    private GameGUI gameGUI;
+	
     //GUI components
     private JButton playButton;
     private JButton settingsButton;
@@ -13,6 +17,10 @@ public class StartingScreenGUI extends JFrame {
     private JRadioButton twoPlayersRadio;
 
     public StartingScreenGUI() {
+    	
+    	rulesGUI = new RulesGUI(this);
+        settingsGUI = new SettingsGUI(this);
+    	
         //Φόρτωση background
         ImageIcon backgroundIcon = new ImageIcon("2nd.png"); 
         JLabel backgroundLabel = new JLabel(backgroundIcon);
@@ -29,6 +37,9 @@ public class StartingScreenGUI extends JFrame {
 
         JButton[] buttons = { playButton, settingsButton, rulesButton };
         for (JButton btn : buttons) {
+        	btn.setBackground(new Color(70, 70, 70));
+            btn.setForeground(Color.WHITE);
+            btn.setFocusPainted(false);
             btn.setFont(bigFont);
             btn.setPreferredSize(buttonSize);
             btn.setMaximumSize(buttonSize);
@@ -94,7 +105,7 @@ public class StartingScreenGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
         	int mode = onePlayerRadio.isSelected() ? 1 : 2;
-            new GameGUI(mode); // Άνοιγμα παιχνιδιού
+            gameGUI = new GameGUI(StartingScreenGUI.this, mode); // Άνοιγμα παιχνιδιού
             dispose();
         }
     }
@@ -102,16 +113,16 @@ public class StartingScreenGUI extends JFrame {
     class ButtonListener2 implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            new SettingsGUI(); // Άνοιγμα ρυθμίσεων
-            dispose();
+        	settingsGUI.setVisible(true); // Άνοιγμα ρυθμίσεων
+        	(StartingScreenGUI.this).setVisible(false);
         }
     }
 
     class ButtonListener3 implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            new RulesGUI(); // Άνοιγμα κανόνων
-            dispose();
+            rulesGUI.setVisible(true);; // Άνοιγμα κανόνων
+            (StartingScreenGUI.this).setVisible(false);
         }
     }
 }
