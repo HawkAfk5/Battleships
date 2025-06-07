@@ -4,6 +4,9 @@ import java.awt.event.*;
 import java.util.Random;
 
 public class GameGUI extends JFrame {
+	
+	private StartingScreenGUI startingScreen;
+	
     private int boardSize = 10;
     private Board player1Board, player2Board;
     private boolean isPlayerOneTurn = true;
@@ -13,7 +16,7 @@ public class GameGUI extends JFrame {
     private int numOfPlayers;
     private Random random = new Random();
 
-    public GameGUI(int mode) {
+    public GameGUI(StartingScreenGUI startingScreen, int mode) {
         this.numOfPlayers = mode;
     	setTitle("Ναυμαχίες");
         setSize(600, 600);

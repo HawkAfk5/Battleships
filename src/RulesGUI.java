@@ -4,9 +4,12 @@ import javax.swing.*;
 
 public class RulesGUI extends JFrame {
 
-    public RulesGUI() {
-        setTitle("Battleship Rules");
-        setLocationRelativeTo(null);
+    private StartingScreenGUI startingScreen;
+
+    public RulesGUI(StartingScreenGUI startingScreen) {
+        this.startingScreen = startingScreen;
+
+        setTitle("Battleship");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -22,10 +25,9 @@ public class RulesGUI extends JFrame {
         overlayPanel.setBorder(BorderFactory.createEmptyBorder(40, 80, 40, 80));
 
         // Title label
-        JLabel title = new JLabel("Rules of Battleship", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 36));
+        JLabel title = new JLabel("RULES", SwingConstants.CENTER);
+        title.setFont(new Font("Arial", Font.BOLD, 100));
         title.setForeground(Color.WHITE);
-        overlayPanel.add(title, BorderLayout.NORTH);
 
         // Rules text
         JTextArea rulesText = new JTextArea(
@@ -49,26 +51,43 @@ public class RulesGUI extends JFrame {
         rulesText.setEditable(false);
         rulesText.setLineWrap(true);
         rulesText.setWrapStyleWord(true);
-        rulesText.setOpaque(false);
-        rulesText.setForeground(Color.BLACK);
+        rulesText.setOpaque(true);                      
+        rulesText.setBackground(new Color(70, 70, 70)); 
+        rulesText.setForeground(Color.WHITE);           
         rulesText.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         JScrollPane scrollPane = new JScrollPane(rulesText);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
-        overlayPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Περιορισμός μεγέθους scrollPane
+        scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        scrollPane.setMaximumSize(new Dimension(800, 400));
+        scrollPane.setPreferredSize(new Dimension(800, 400));
+
+        // Center panel για τίτλο + scrollPane
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setOpaque(false);
+
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.add(title);
+        centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        centerPanel.add(scrollPane);
+
+        overlayPanel.add(centerPanel, BorderLayout.CENTER);
 
         // Back button
-        JButton backButton = new JButton("Back to Starting Screen");
-        backButton.setFont(new Font("Arial", Font.BOLD, 20));
+        JButton backButton = new JButton("GO BACK");
+        backButton.setFont(new Font("Arial", Font.BOLD, 50));
         backButton.setBackground(new Color(70, 70, 70));
         backButton.setForeground(Color.WHITE);
         backButton.setFocusPainted(false);
-        backButton.setPreferredSize(new Dimension(300, 50));
+        backButton.setPreferredSize(new Dimension(400, 80));
         backButton.addActionListener(e -> {
-            new StartingScreenGUI();
-            dispose();
+            startingScreen.setVisible(true);
+            (RulesGUI.this).setVisible(false);
         });
 
         JPanel buttonPanel = new JPanel();
