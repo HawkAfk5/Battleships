@@ -1,7 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
+import javax.sound.sampled.*;
 
 public class GameGUI extends JFrame {
 	
@@ -172,9 +175,18 @@ public class GameGUI extends JFrame {
         btn.setEnabled(false);
 
         switch (result) {
-            case "HIT" -> btn.setBackground(Color.ORANGE);
-            case "MISS" -> btn.setBackground(Color.CYAN);
-            case "SUNK" -> btn.setBackground(Color.RED);
+        case "HIT" -> {
+            btn.setBackground(Color.ORANGE);
+            SoundManager.playSound("hitsound.wav");
+        }
+            case "MISS" ->{
+                btn.setBackground(Color.CYAN);
+                SoundManager.playSound("misssound.wav");
+            }
+            case "SUNK" -> {
+                btn.setBackground(Color.RED);
+                SoundManager.playSound("sunksound.wav");
+            }
         }
 
         if (defenderBoard.areAllShipsSunk()) {
@@ -248,7 +260,7 @@ public class GameGUI extends JFrame {
         } else {
             System.exit(0);
         }
-    }
-
+     
+}
     
 }

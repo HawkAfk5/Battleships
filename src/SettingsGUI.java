@@ -159,7 +159,21 @@ public class SettingsGUI extends JFrame {
         bottomPanel.add(Box.createRigidArea(new Dimension(0, 30)));
         bottomPanel.add(startingScreenButton);
         bottomPanel.add(Box.createVerticalGlue());
+        
+        //connect sound manager with settings
+        onMusicRadio.addActionListener(e -> {
+            SoundManager.musicEnabled = true;
+            SoundManager.playBackgroundMusic("Main Theme.wav"); 
+        });
+        offMusicRadio.addActionListener(e -> {
+            SoundManager.musicEnabled = false;
+            SoundManager.stopBackgroundMusic();
+        });
 
+        // Sound effects toggle
+        onSoundRadio.addActionListener(e -> SoundManager.soundEffectsEnabled = true);
+        offSoundRadio.addActionListener(e -> SoundManager.soundEffectsEnabled = false);
+        
         //Προσθήκη στο background
         backgroundLabel.add(bottomPanel, BorderLayout.SOUTH);
 
