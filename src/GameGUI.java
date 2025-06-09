@@ -4,9 +4,12 @@ import java.awt.event.*;
 import java.util.Random;
 
 public class GameGUI extends JFrame {
-	
-	private StartingScreenGUI startingScreen;
-	
+
+    private StartingScreenGUI startingScreen;
+
+    private StatisticsGUI player1Stats = new StatisticsGUI();
+    private StatisticsGUI player2Stats = new StatisticsGUI();
+
     private int boardSize = 10;
     private Board player1Board, player2Board;
     private boolean isPlayerOneTurn = true;
@@ -17,20 +20,19 @@ public class GameGUI extends JFrame {
     private Random random = new Random();
 
     public GameGUI(StartingScreenGUI startingScreen, int mode) {
+        this.startingScreen = startingScreen;
         this.numOfPlayers = mode;
-    	setTitle("Ναυμαχίες");
+        setTitle("Ναυμαχίες");
         setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         startGame();
     }
 
     private void startGame() {
-        
-    	if (numOfPlayers == 2) 
+        if (numOfPlayers == 2)
             setupBoards();
-         else 
+        else
             setupSinglePlayer();
-        
     }
 
     private void setupBoards() {
@@ -132,6 +134,7 @@ public class GameGUI extends JFrame {
                 boardPanel.add(btn);
             }
         }
+
         this.setVisible(true);
         add(boardPanel, BorderLayout.CENTER);
         revalidate();
@@ -171,16 +174,44 @@ public class GameGUI extends JFrame {
         JButton btn = attackButtons[row][col];
         btn.setEnabled(false);
 
+        // Get the ship at attacked location (if any)
+        Ship ship = defenderBoard.getShipAt(row, col);
+        String shipName = (ship != null) ? ship.getName() : "None";
+
+        // Update statistics
+        if (isPlayerOneTurn) {
+            player1Stats.recordShot(result.equals("HIT") || result.equals("SUNK"), shipName);
+        } else {
+            player2Stats.recordShot(result.equals("HIT") || result.equals("SUNK"), shipName);
+        }
+
         switch (result) {
-            case "HIT" -> btn.setBackground(Color.ORANGE);
-            case "MISS" -> btn.setBackground(Color.CYAN);
-            case "SUNK" -> btn.setBackground(Color.RED);
+            case "HIT" -> {
+                btn.setBackground(Color.ORANGE);
+                SoundManager.playSound("hitsound.wav");
+            }
+            case "MISS" -> {
+                btn.setBackground(Color.CYAN);
+                SoundManager.playSound("misssound.wav");
+            }
+            case "SUNK" -> {
+                btn.setBackground(Color.RED);
+                SoundManager.playSound("sunksound.wav");
+            }
         }
 
         if (defenderBoard.areAllShipsSunk()) {
-            String winner = isPlayerOneTurn ? "Παίκτης 1" : (numOfPlayers == 1 ? "Ο υπολογιστής" : "Παίκτης 2");
+            String winner = isPlayerOneTurn ? "Παίκτης 1" : (numOfPlayers == 1 ? "Ο Υπολογιστής" : "Παίκτης 2");
+            player1Stats.setWinner("Παίκτης 1");
+            player2Stats.setWinner(numOfPlayers == 1 ? "Υπολογιστής" : "Παίκτης 2");
+
             SwingUtilities.invokeLater(() -> {
+                // Show a quick message
                 JOptionPane.showMessageDialog(this, winner + " ΚΕΡΔΙΣΕ!");
+
+                // Show detailed statistics
+                
+
                 askForRestart();
             });
             return;
@@ -195,13 +226,13 @@ public class GameGUI extends JFrame {
             }
             updateBoardView();
         } else {
-            // Single player mode stays as is
             isPlayerOneTurn = !isPlayerOneTurn;
             updateBoardView();
             botTurn();
         }
     }
-    
+
+
     private void botTurn() {
         Timer timer = new Timer(1000, e -> {
             int row, col;
@@ -222,6 +253,7 @@ public class GameGUI extends JFrame {
             if (player1Board.areAllShipsSunk()) {
                 SwingUtilities.invokeLater(() -> {
                     JOptionPane.showMessageDialog(this, "Ο υπολογιστής ΚΕΡΔΙΣΕ!");
+                    new StatisticsGUI(player1Stats, player2Stats);
                     askForRestart();
                 });
                 return;
@@ -235,20 +267,48 @@ public class GameGUI extends JFrame {
     }
 
     private void askForRestart() {
-        int choice = JOptionPane.showConfirmDialog(this, "Θέλεις να ξαναπαίξεις;", "Νέα Παρτίδα;",
-                JOptionPane.YES_NO_OPTION);
+        JDialog dialog = new JDialog(this, "Τέλος Παιχνιδιού", false); // non-modal
+        dialog.setSize(300, 150);
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(new BorderLayout());
 
-        if (choice == JOptionPane.YES_OPTION) {
+        JLabel messageLabel = new JLabel("Θέλεις να ξαναπαίξεις;", SwingConstants.CENTER);
+        messageLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        dialog.add(messageLabel, BorderLayout.NORTH);
+
+        // Buttons panel
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+
+        JButton yesButton = new JButton("Ναι");
+        JButton noButton = new JButton("Όχι");
+        JButton statsButton = new JButton("Προβολή Στατιστικών");
+
+        yesButton.addActionListener(e -> {
+            dialog.dispose();
             isPlayerOneTurn = true;
             getContentPane().removeAll();
             revalidate();
             repaint();
             startGame();
-            this.setVisible(false);
-        } else {
+        });
+
+        noButton.addActionListener(e -> {
+            dialog.dispose();
             System.exit(0);
-        }
+        });
+
+        statsButton.addActionListener(e -> {
+            new StatisticsGUI(player1Stats, player2Stats);
+        });
+
+        buttonPanel.add(yesButton);
+        buttonPanel.add(noButton);
+        buttonPanel.add(statsButton);
+
+        dialog.add(buttonPanel, BorderLayout.CENTER);
+        dialog.setVisible(true);
     }
 
-    
+
+
 }

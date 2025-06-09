@@ -97,6 +97,8 @@ public class StartingScreenGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setVisible(true);
+        
+SoundManager.playBackgroundMusic("Main Theme.wav");
     }
 
     //Listeners
