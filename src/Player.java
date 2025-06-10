@@ -64,5 +64,9 @@ public class Player {
         this.colour = aColour;
     }
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	
 }
