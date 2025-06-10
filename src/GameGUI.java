@@ -39,6 +39,9 @@ public class GameGUI extends JFrame {
         setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        
+        toggleBackground(true);
+        
         startGame();
     }
 
@@ -54,7 +57,10 @@ public class GameGUI extends JFrame {
         player2Board = new Board(boardSize);
 
         placeShipsForPlayer(player1Board, player1Name, player1Color, () -> {
-            placeShipsForPlayer(player2Board, player2Name, player2Color, () -> {
+        	 
+        	toggleBackground(true); 
+        	 
+        	placeShipsForPlayer(player2Board, player2Name, player2Color, () -> {
                 JOptionPane.showMessageDialog(this, "Έτοιμοι για μάχη! Ξεκινά ο " + player1Name);
                 setupGameBoard();
             });
@@ -161,7 +167,7 @@ public class GameGUI extends JFrame {
 
     private void setupGameBoard() {
     	toggleBackground(true);
-    	
+    
     	getContentPane().removeAll();
         boardPanel = new JPanel(new GridLayout(boardSize, boardSize));
         attackButtons = new JButton[boardSize][boardSize];
@@ -308,7 +314,8 @@ public class GameGUI extends JFrame {
     }
 
     private void askForRestart() {
-        JDialog dialog = new JDialog(this, "Τέλος Παιχνιδιού", false); // non-modal
+        this.setVisible(false);
+    	JDialog dialog = new JDialog(this, "Τέλος Παιχνιδιού", false); // non-modal
         dialog.setSize(300, 150);
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new BorderLayout());
@@ -327,9 +334,6 @@ public class GameGUI extends JFrame {
         yesButton.addActionListener(e -> {
             dialog.dispose();
             isPlayerOneTurn = true;
-            getContentPane().removeAll();
-            revalidate();
-            repaint();
             startGame();
         });
 
