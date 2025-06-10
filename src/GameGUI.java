@@ -10,7 +10,6 @@ public class GameGUI extends JFrame {
     private StatisticsGUI player1Stats = new StatisticsGUI();
     private StatisticsGUI player2Stats = new StatisticsGUI();
 
-    private int boardSize = 10;
     private Board player1Board, player2Board;
     private boolean isPlayerOneTurn = true;
     private JButton[][] attackButtons;
@@ -19,11 +18,13 @@ public class GameGUI extends JFrame {
     private int numOfPlayers;
     private Random random = new Random();
     
+    private int boardSize;
     private String player1Name, player2Name;
     private Color player1Color, player2Color;
 
-    public GameGUI(StartingScreenGUI startingScreen, int mode, String player1Name, Color player1Color,
+    public GameGUI(StartingScreenGUI startingScreen, int mode, int boardSize, String player1Name, Color player1Color,
             String player2Name, Color player2Color) {
+    	this.boardSize = boardSize;
         this.startingScreen = startingScreen;
         this.numOfPlayers = mode;
         this.player1Name = player1Name;
