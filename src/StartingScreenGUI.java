@@ -113,9 +113,10 @@ SoundManager.playBackgroundMusic("Main Theme.wav");
         @Override
         public void actionPerformed(ActionEvent e) {
         	int mode = onePlayerRadio.isSelected() ? 1 : 2;
+        	int boardSize = settingsGUI != null ? settingsGUI.getBoardSize() : 10;
         	new PlayerNameInputGUI(StartingScreenGUI.this, mode, players -> {
                 dispose();
-                new GameGUI(StartingScreenGUI.this, mode,
+                new GameGUI(StartingScreenGUI.this, mode, boardSize,
                     players[0].getName(),
                     players[0].getColour().equals("Blue") ? Color.BLUE : Color.RED,
                     players[1].getName(),

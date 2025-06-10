@@ -190,7 +190,16 @@ public class SettingsGUI extends JFrame {
         setVisible(true);
     }
 
-    
+    public int getBoardSize() {
+        if (tenRadio.isSelected()) {
+            return 10;
+        } else if (twelveRadio.isSelected()) {
+            return 12;
+        } else if (fifteenRadio.isSelected()) {
+            return 15;
+        }
+        return 10; // default
+    }
     
     //Listeners
 
