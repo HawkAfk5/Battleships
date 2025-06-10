@@ -7,6 +7,8 @@ public class GameGUI extends JFrame {
 
     private StartingScreenGUI startingScreen;
 
+    private JWindow backgroundWindow;
+    
     private StatisticsGUI player1Stats = new StatisticsGUI();
     private StatisticsGUI player2Stats = new StatisticsGUI();
 
@@ -24,6 +26,7 @@ public class GameGUI extends JFrame {
 
     public GameGUI(StartingScreenGUI startingScreen, int mode, int boardSize, String player1Name, Color player1Color,
             String player2Name, Color player2Color) {
+    	
     	this.boardSize = boardSize;
         this.startingScreen = startingScreen;
         this.numOfPlayers = mode;
@@ -35,6 +38,7 @@ public class GameGUI extends JFrame {
         setTitle("Ναυμαχίες");
         setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         startGame();
     }
 
@@ -69,6 +73,28 @@ public class GameGUI extends JFrame {
         });
     }
 
+    private void toggleBackground(boolean show) {
+        
+        if (backgroundWindow == null) {
+            backgroundWindow = new JWindow();
+            try {
+                ImageIcon backgroundImage = new ImageIcon(getClass().getResource("/images/1st.png"));
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                Image scaledImage = backgroundImage.getImage().getScaledInstance(screenSize.width, screenSize.height, Image.SCALE_SMOOTH);
+                JLabel backgroundLabel = new JLabel(new ImageIcon(scaledImage));
+                backgroundWindow.getContentPane().add(backgroundLabel);
+                backgroundWindow.setSize(screenSize);
+            } catch (Exception e) {
+                System.err.println("Η εικόνα φόντου δεν βρέθηκε!");
+                backgroundWindow = null; 
+            }
+        }
+
+       
+        if (backgroundWindow != null) {
+            backgroundWindow.setVisible(show);
+        }
+    }
 
     private void autoPlaceShips(Board board) {
         for (int size : shipSizes) {
@@ -134,7 +160,9 @@ public class GameGUI extends JFrame {
 
 
     private void setupGameBoard() {
-        getContentPane().removeAll();
+    	toggleBackground(true);
+    	
+    	getContentPane().removeAll();
         boardPanel = new JPanel(new GridLayout(boardSize, boardSize));
         attackButtons = new JButton[boardSize][boardSize];
 
@@ -307,6 +335,10 @@ public class GameGUI extends JFrame {
 
         noButton.addActionListener(e -> {
             dialog.dispose();
+            toggleBackground(false); 
+            if (backgroundWindow != null) {
+                 backgroundWindow.dispose(); 
+            }
             System.exit(0);
         });
 
