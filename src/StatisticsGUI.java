@@ -52,40 +52,40 @@ public class StatisticsGUI extends JFrame {
     public int getMaxHitStreak() { return maxHitStreak; }
     public int getMaxMissStreak() { return maxMissStreak; }
 
-
     public StatisticsGUI(StatisticsGUI player1Stats, StatisticsGUI player2Stats) {
-        setTitle("Στατιστικά Ναυμαχίας");
+        setTitle("Battleship Statistics");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setResizable(false);
 
-        // Background image
         ImageIcon backgroundIcon = new ImageIcon("1st.png");
         JLabel backgroundLabel = new JLabel(backgroundIcon);
         backgroundLabel.setLayout(new BorderLayout());
 
-        // Transparent overlay panel with padding
         JPanel overlayPanel = new JPanel(new BorderLayout(30, 30));
         overlayPanel.setOpaque(false);
         overlayPanel.setBorder(BorderFactory.createEmptyBorder(40, 80, 40, 80));
 
-        // Title label
-        JLabel titleLabel = new JLabel("Στατιστικά Ναυμαχίας", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Battleship Statistics!", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 80));
         titleLabel.setForeground(Color.WHITE);
         overlayPanel.add(titleLabel, BorderLayout.NORTH);
 
-        // Main panel with two player stats side-by-side
         JPanel mainPanel = new JPanel(new GridLayout(1, 2, 40, 0));
         mainPanel.setOpaque(false);
 
-        mainPanel.add(createPlayerPanel(player1Stats, "Παίκτης 1"));
-        mainPanel.add(createPlayerPanel(player2Stats, player2Stats.getWinner().equals("Υπολογιστής") ? "Υπολογιστής" : "Παίκτης 2"));
+        String winnerName = player1Stats.getWinner();
+        boolean isPlayer1Winner = winnerName.equals("PLAYER 1") || winnerName.equals("HUMAN");
+
+        String player2Label = isPlayer1Winner ? "WINNER" : "LOSER";
+        String player1Label = isPlayer1Winner ? "LOSER" : "WINNER";
+
+        mainPanel.add(createPlayerPanel(player1Stats, player1Label));
+        mainPanel.add(createPlayerPanel(player2Stats, player2Label));
 
         overlayPanel.add(mainPanel, BorderLayout.CENTER);
 
-        // Close button panel
-        JButton closeButton = new JButton("ΚΛΕΙΣΙΜΟ");
+        JButton closeButton = new JButton("CLOSE");
         closeButton.setFont(new Font("Arial", Font.BOLD, 50));
         closeButton.setBackground(new Color(70, 70, 70));
         closeButton.setForeground(Color.WHITE);
@@ -99,61 +99,44 @@ public class StatisticsGUI extends JFrame {
         overlayPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         backgroundLabel.add(overlayPanel, BorderLayout.CENTER);
-
         setContentPane(backgroundLabel);
         setVisible(true);
     }
 
-    private JPanel createPlayerPanel(StatisticsGUI stats, String playerName) {
+    private JPanel createPlayerPanel(StatisticsGUI stats, String playerLabelStr) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setOpaque(false);
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JLabel playerLabel = new JLabel(playerName);
+        JLabel playerLabel = new JLabel(playerLabelStr);
         playerLabel.setFont(new Font("Arial", Font.BOLD, 36));
-        playerLabel.setForeground(Color.WHITE);
+        playerLabel.setForeground(playerLabelStr.equals("WINNER") ? new Color(0, 255, 0) : new Color(255, 80, 80));
         playerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(playerLabel);
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        panel.add(createStatLabel("Συνολικές κινήσεις: " + stats.getTurnsTaken()));
-        panel.add(createStatLabel(String.format("Ποσοστό Χτυπημάτων: %.2f%%", stats.getAccuracy())));
-        panel.add(createStatLabel("Νικητής: " + (stats.getWinner().isEmpty() ? "-" : stats.getWinner())));
-        panel.add(createStatLabel("Μέγιστο Σερί Χτυπημάτων: " + stats.getMaxHitStreak()));
-        panel.add(createStatLabel("Μέγιστο Σερί Αστοχιών: " + stats.getMaxMissStreak()));
+        panel.add(createStatLabel("Total number of moves: " + stats.getTurnsTaken()));
+        panel.add(createStatLabel(String.format("Hit Ratio: %.2f%%", stats.getAccuracy())));
+        panel.add(createStatLabel("Player Name: " + (stats.getWinner().isEmpty() ? "-" : stats.getWinner())));
+        panel.add(createStatLabel("Max consecutive hits: " + stats.getMaxHitStreak()));
+        panel.add(createStatLabel("Max consecutive misses: " + stats.getMaxMissStreak()));
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        JLabel shipsLabel = new JLabel("Χτυπήματα ανά Πλοίο:");
+        JLabel shipsLabel = new JLabel("Total Ships Hit :");
         shipsLabel.setFont(new Font("Arial", Font.BOLD, 28));
         shipsLabel.setForeground(Color.WHITE);
         shipsLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(shipsLabel);
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        JTextArea shipsText = new JTextArea(10, 20);
-        shipsText.setEditable(false);
-        shipsText.setFont(new Font("Monospaced", Font.PLAIN, 18));
-        shipsText.setOpaque(true);
-        shipsText.setBackground(new Color(40, 40, 40, 200));
-        shipsText.setForeground(Color.WHITE);
-        shipsText.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-
         if (stats.getShotsPerShip().isEmpty()) {
-            shipsText.setText("  (Κανένα χτύπημα)");
+            panel.add(createStatLabel("  (No hits)"));
         } else {
-            StringBuilder sb = new StringBuilder();
             for (Map.Entry<String, Integer> entry : stats.getShotsPerShip().entrySet()) {
-                sb.append(String.format("  %s: %d\n", entry.getKey(), entry.getValue()));
+                panel.add(createStatLabel("  " + entry.getKey() + ": " + entry.getValue()));
             }
-            shipsText.setText(sb.toString());
         }
-
-        JScrollPane scrollPane = new JScrollPane(shipsText);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-        panel.add(scrollPane);
 
         return panel;
     }

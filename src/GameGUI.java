@@ -61,7 +61,7 @@ public class GameGUI extends JFrame {
         	toggleBackground(true); 
         	 
         	placeShipsForPlayer(player2Board, player2Name, player2Color, () -> {
-                JOptionPane.showMessageDialog(this, "Έτοιμοι για μάχη! Ξεκινά ο " + player1Name);
+                JOptionPane.showMessageDialog(this, "Ready for battle! Begin  " + player1Name);
                 setupGameBoard();
             });
         });
@@ -74,7 +74,7 @@ public class GameGUI extends JFrame {
 
         placeShipsForPlayer(player1Board, player1Name, player1Color, () -> {
             autoPlaceShips(player2Board);
-            JOptionPane.showMessageDialog(this, "Ξεκινά το παιχνίδι ενάντια στον υπολογιστή!");
+            JOptionPane.showMessageDialog(this, "Begin against the computer!");
             setupGameBoard();
         });
     }
@@ -116,7 +116,7 @@ public class GameGUI extends JFrame {
     }
 
     private void placeShipsForPlayer(Board board, String playerName, Color shipColor, Runnable onComplete) {
-        JFrame frame = new JFrame("Τοποθέτηση Πλοίων - " + playerName);
+        JFrame frame = new JFrame("Place the ships - " + playerName);
         frame.setSize(400, 400);
         frame.setLocationRelativeTo(null);
         JPanel grid = new JPanel(new GridLayout(boardSize, boardSize));
@@ -131,14 +131,14 @@ public class GameGUI extends JFrame {
                 btn.addActionListener(e -> {
                     if (shipIndex[0] >= shipSizes.length) return;
 
-                    String[] options = {"Οριζόντια", "Κάθετα"};
-                    int dir = JOptionPane.showOptionDialog(frame, "Κατεύθυνση για πλοίο " + shipSizes[shipIndex[0]],
-                            "Κατεύθυνση", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                    String[] options = {"Horizontal", "Vertical"};
+                    int dir = JOptionPane.showOptionDialog(frame, "Ship Direction " + shipSizes[shipIndex[0]],
+                            "Direction", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
                             null, options, options[0]);
                     if (dir == -1) return;
                     boolean horizontal = dir == 0;
 
-                    Ship ship = new Ship("Πλοίο", shipSizes[shipIndex[0]]);
+                    Ship ship = new Ship("Ship", shipSizes[shipIndex[0]]);
                     if (board.placeShip(ship, r, c, horizontal)) {
                         for (int i = 0; i < ship.getSize(); i++) {
                             int rr = r + (horizontal ? 0 : i);
@@ -151,7 +151,7 @@ public class GameGUI extends JFrame {
                             onComplete.run();
                         }
                     } else {
-                        JOptionPane.showMessageDialog(frame, "Μη έγκυρη τοποθέτηση.");
+                        JOptionPane.showMessageDialog(frame, "Invalid Placement .");
                     }
                 });
 
@@ -248,13 +248,13 @@ public class GameGUI extends JFrame {
         }
 
         if (defenderBoard.areAllShipsSunk()) {
-            String winner = isPlayerOneTurn ? player1Name : (numOfPlayers == 1 ? "Ο Υπολογιστής" : player2Name);
+            String winner = isPlayerOneTurn ? player1Name : (numOfPlayers == 1 ? "Computer " : player2Name);
             player1Stats.setWinner(player1Name); 
-            player2Stats.setWinner(numOfPlayers == 1 ? "Υπολογιστής" : player2Name); 
+            player2Stats.setWinner(numOfPlayers == 1 ? "Computer" : player2Name); 
 
             SwingUtilities.invokeLater(() -> {
                 // Show a quick message
-                JOptionPane.showMessageDialog(this, winner + " ΚΕΡΔΙΣΕ!");
+                JOptionPane.showMessageDialog(this, winner + " WON !");
 
                 // Show detailed statistics
                 
@@ -267,9 +267,9 @@ public class GameGUI extends JFrame {
         if (numOfPlayers == 2) {
             if (result.equals("MISS")) {
                 isPlayerOneTurn = !isPlayerOneTurn;
-                JOptionPane.showMessageDialog(this, "Άστοχο! Σειρά του " + (isPlayerOneTurn ? player1Name : player2Name));
+                JOptionPane.showMessageDialog(this, "Miss! " + (isPlayerOneTurn ? player1Name : player2Name) + "'s turn");
             } else {
-                JOptionPane.showMessageDialog(this, "Εύστοχο! Ξαναρίξε " + (isPlayerOneTurn ? player1Name : player2Name));
+                JOptionPane.showMessageDialog(this, "Hit! Attack again " + (isPlayerOneTurn ? player1Name : player2Name));
             }
             updateBoardView();
         } else {
@@ -299,7 +299,7 @@ public class GameGUI extends JFrame {
 
             if (player1Board.areAllShipsSunk()) {
                 SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(this, "Ο υπολογιστής ΚΕΡΔΙΣΕ!");
+                    JOptionPane.showMessageDialog(this, "Computer WON !");
                     new StatisticsGUI(player1Stats, player2Stats);
                     askForRestart();
                 });
@@ -315,21 +315,21 @@ public class GameGUI extends JFrame {
 
     private void askForRestart() {
         this.setVisible(false);
-    	JDialog dialog = new JDialog(this, "Τέλος Παιχνιδιού", false); // non-modal
+    	JDialog dialog = new JDialog(this, "End oF Game !", false); // non-modal
         dialog.setSize(300, 150);
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new BorderLayout());
 
-        JLabel messageLabel = new JLabel("Θέλεις να ξαναπαίξεις;", SwingConstants.CENTER);
+        JLabel messageLabel = new JLabel("Play again ?", SwingConstants.CENTER);
         messageLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
         dialog.add(messageLabel, BorderLayout.NORTH);
 
         // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout());
 
-        JButton yesButton = new JButton("Ναι");
-        JButton noButton = new JButton("Όχι");
-        JButton statsButton = new JButton("Προβολή Στατιστικών");
+        JButton yesButton = new JButton("Yes");
+        JButton noButton = new JButton("No");
+        JButton statsButton = new JButton("Show Statistics");
 
         yesButton.addActionListener(e -> {
             dialog.dispose();
