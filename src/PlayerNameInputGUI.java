@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 public class PlayerNameInputGUI extends JDialog {
 
     public PlayerNameInputGUI(JFrame parent, int mode, Consumer<Player[]> onSubmit) {
-        super(parent, "Εισαγωγή Ονομάτων", true);
+        super(parent, "Enter Names !", true);
 
         Player player1 = new Player(1);
         player1.readName();
