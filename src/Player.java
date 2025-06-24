@@ -28,8 +28,7 @@ public class Player {
         String input = JOptionPane.showInputDialog(choice);
 
         if (input == null) {
-            JOptionPane.showMessageDialog(null, "Exiting the game.");
-            System.exit(0);
+            JOptionPane.showMessageDialog(null, "Try again");
         }
 
         name = input.trim();
@@ -43,8 +42,7 @@ public class Player {
                 name + ", please select your colour (Blue / Red):");
 
             if (input == null) {
-                JOptionPane.showMessageDialog(null, "Exiting the game.");
-                System.exit(0); // Program Terminated
+                JOptionPane.showMessageDialog(null, "Try again.");
             }
 
             input = input.trim();
