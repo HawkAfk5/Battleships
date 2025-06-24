@@ -35,7 +35,7 @@ public class GameGUI extends JFrame {
         this.player1Color = player1Color;
         this.player2Color = player2Color;
 
-        setTitle("Ναυμαχίες");
+        setTitle("Battleship");
         setSize(600, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -248,19 +248,19 @@ public class GameGUI extends JFrame {
         }
 
         if (defenderBoard.areAllShipsSunk()) {
-            String winner = isPlayerOneTurn ? player1Name : (numOfPlayers == 1 ? "Computer " : player2Name);
-            player1Stats.setWinner(player1Name); 
-            player2Stats.setWinner(numOfPlayers == 1 ? "Computer" : player2Name); 
+            String winnerName;
+            if (isPlayerOneTurn) {
+                winnerName = player1Name;
+                player1Stats.setWinner(player1Name);
+                player2Stats.setWinner(numOfPlayers == 1 ? "Computer" : player2Name);
+            } else {
+                winnerName = (numOfPlayers == 1 ? "Computer" : player2Name);
+                player1Stats.setWinner(player1Name);
+                player2Stats.setWinner(winnerName);
+            }
 
-            SwingUtilities.invokeLater(() -> {
-                // Show a quick message
-                JOptionPane.showMessageDialog(this, winner + " WON !");
-
-                // Show detailed statistics
-                
-
-                askForRestart();
-            });
+            JOptionPane.showMessageDialog(this, winnerName + " WON!");
+            askForRestart();
             return;
         }
 
@@ -273,43 +273,71 @@ public class GameGUI extends JFrame {
             }
             updateBoardView();
         } else {
-            isPlayerOneTurn = false;
-            updateBoardView();
-            botTurn();
+            if (result.equals("MISS")) {
+                isPlayerOneTurn = false;
+                updateBoardView();
+                botTurn();
+            } else {
+                JOptionPane.showMessageDialog(this, "Hit! Play again " + player1Name);
+                updateBoardView();
+            }
         }
     }
 
 
     private void botTurn() {
-        Timer timer = new Timer(1000, e -> {
-            int row, col;
+        Timer timer = new Timer(800, null); 
+        timer.setRepeats(false);
+
+        timer.addActionListener(e -> {
+            boolean botContinues;
+
             do {
-                row = random.nextInt(boardSize);
-                col = random.nextInt(boardSize);
-            } while (player1Board.isShotAt(row, col));
+                int row, col;
+                do {
+                    row = random.nextInt(boardSize);
+                    col = random.nextInt(boardSize);
+                } while (player1Board.isShotAt(row, col));
 
-            String result = player1Board.receiveAttack(row, col);
-            JButton btn = attackButtons[row][col];
+                String result = player1Board.receiveAttack(row, col);
 
-            switch (result) {
-                case "HIT" -> btn.setBackground(Color.ORANGE);
-                case "MISS" -> btn.setBackground(Color.CYAN);
-                case "SUNK" -> btn.setBackground(Color.RED);
-            }
+                updateBoardView();
 
-            if (player1Board.areAllShipsSunk()) {
-                SwingUtilities.invokeLater(() -> {
+                Ship ship = player1Board.getShipAt(row, col);
+                String shipName = (ship != null) ? ship.getName() : "None";
+
+                player2Stats.recordShot(result.equals("HIT") || result.equals("SUNK"), shipName);
+
+                SoundManager.playSound(
+                    switch (result) {
+                        case "HIT" -> "hitsound.wav";
+                        case "MISS" -> "misssound.wav";
+                        case "SUNK" -> "sunksound.wav";
+                        default -> null;
+                    }
+                );
+
+                if (player1Board.areAllShipsSunk()) {
                     JOptionPane.showMessageDialog(this, "Computer WON !");
                     new StatisticsGUI(player1Stats, player2Stats);
                     askForRestart();
-                });
-                return;
-            }
+                    return;
+                }
+
+                botContinues = result.equals("HIT") || result.equals("SUNK");
+
+                try {
+                    Thread.sleep(800); 
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+
+            } while (botContinues);
 
             isPlayerOneTurn = true;
             updateBoardView();
         });
-        timer.setRepeats(false);
+
         timer.start();
     }
 
@@ -343,7 +371,8 @@ public class GameGUI extends JFrame {
             if (backgroundWindow != null) {
                  backgroundWindow.dispose(); 
             }
-            System.exit(0);
+            startingScreen.setVisible(true);
+            (GameGUI.this).setVisible(false);
         });
 
         statsButton.addActionListener(e -> {
